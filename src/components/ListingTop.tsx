@@ -2,7 +2,7 @@ import { MagicCard } from "./ui/magic-card";
 import { BiUpvote, BiDownvote } from "react-icons/bi";
 
 
-export default function Listing() {
+export default function ListingTop() {
     const cards = Array(10).fill(0); // Array to iterate 10 times
 
     return (
