@@ -6,6 +6,7 @@ export default {
 		"./src/components/**/*.{js,ts,jsx,tsx,mdx}",
 		"./src/app/**/*.{js,ts,jsx,tsx,mdx}",
 	],
+	darkMode: 'class',
 	theme: {
 		extend: {
 			colors: {
@@ -16,6 +17,19 @@ export default {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
+			},
+			animation: {
+				'shiny-text': 'shiny-text 8s infinite'
+			},
+			keyframes: {
+				'shiny-text': {
+					'0%, 90%, 100%': {
+						'background-position': 'calc(-100% - var(--shiny-width)) 0'
+					},
+					'30%, 60%': {
+						'background-position': 'calc(100% + var(--shiny-width)) 0'
+					}
+				}
 			}
 		}
 	},
