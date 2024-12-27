@@ -1,13 +1,35 @@
+"use client"
+
+import { useEffect, useState } from "react";
 import { MagicCard } from "./ui/magic-card";
 import { BiUpvote, BiDownvote } from "react-icons/bi";
-
+import { listingType } from "@/types/listing";
+import axios from "axios";
+import dayjs from 'dayjs'
+import Link from "next/link";
 
 export default function ListingTop() {
-    const cards = Array(10).fill(0); // Array to iterate 10 times
+    const [listings, setListings] = useState<listingType[]>([])
+
+    const fetchListings = async () => {
+        try {
+            const response = await axios.get('/api/fetch')
+            console.log(response.data.message)
+            setListings(response.data.message)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchListings()
+    }, [])
 
     return (
         <section className="flex flex-col items-center gap-8 mt-6 max-sm:px-2">
-            {cards.map((_, index) => (
+            {listings.length < 1 && <p>Loading...</p>}
+
+            {listings && listings.map((listing, index) => (
                 <MagicCard
                     key={index}
                     className="cursor-pointer w-[50vw] max-sm:w-full h-fit flex text-white shadow-2xl bg-transparent relative"
@@ -18,14 +40,18 @@ export default function ListingTop() {
                             #{index + 1}
                         </div>
                         <div className="content pr-12">
-                            <h2 className="text-xl font-semibold">Atomic Habits by James Clear</h2>
-                            <p className="">A book that teaches how small habits can lead to big changes in life.</p>
-                            <p className="text-xs mt-2 text-gray-300">by <span className="underline">Fardeen</span> on <span>26 Dec, 24</span></p>
+                            <h2 className="text-xl font-semibold">{listing.title}</h2>
+                            <p className="">{listing.description}</p>
+                            <p className="text-xs mt-2 text-gray-300">
+                                by <Link href={`https://x.com/${listing.user_twitter}`} target="_blank">
+                                    <span className="underline">{listing.username}</span>
+                                </Link> on <span>{dayjs(listing.created_at).format('DD, MMM, YY')}</span>
+                            </p>
                         </div>
                         <div className="upvote flex flex-col absolute right-5 items-center gap-2">
-                            <span className="hover:scale-110 transition-all"><BiUpvote /></span>
-                            <span>{10 - index}</span>
-                            <span className="hover:scale-110 transition-all"><BiDownvote /></span>
+                            <button className="hover:scale-110 transition-all"><BiUpvote /></button>
+                            <span>{(listing.vote ?? 0)}</span>
+                            <button className="hover:scale-110 transition-all"><BiDownvote /></button>
                         </div>
                     </div>
                 </MagicCard>

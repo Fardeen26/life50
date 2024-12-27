@@ -1,23 +1,14 @@
 import { supabase } from "@/lib/supabaseClient";
-import { listingType } from "@/types/listing";
 
-export async function POST(req: Request) {
+export async function GET() {
     try {
-        const listingData: listingType = await req.json();
-        const { data, error } = await supabase.from('listings').insert([{
-            title: listingData.title,
-            description: listingData.description,
-            username: listingData.username,
-            user_twitter: listingData.user_twitter,
-            resource_link: listingData.resource_link,
-            category: listingData.category
-        }]).select('*')
+        const { data, error } = await supabase.from('listings').select('*').order("vote", { ascending: false });
 
         if (error) {
             return Response.json(
                 {
                     success: false,
-                    message: 'Error while adding listing',
+                    message: 'Error while fetching listing',
                 },
                 { status: 500 }
             );
@@ -42,5 +33,3 @@ export async function POST(req: Request) {
         );
     }
 }
-
-

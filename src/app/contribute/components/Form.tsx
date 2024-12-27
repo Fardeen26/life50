@@ -23,8 +23,10 @@ import {
 import { Input } from "@/components/ui/input"
 import { bricolage_grotesque } from '@/lib/fonts';
 import { listingSchema } from '@/schema/listingSchema';
+import { useRouter } from 'next/navigation';
 
 export default function CustomForm() {
+    const router = useRouter()
     const form = useForm<z.infer<typeof listingSchema>>({
         resolver: zodResolver(listingSchema),
         defaultValues: {
@@ -37,10 +39,11 @@ export default function CustomForm() {
         },
     });
 
+
     const onSubmit = async (data: z.infer<typeof listingSchema>) => {
         try {
-            const response = await axios.post('/api/add', data)
-            console.log(response.data.message)
+            await axios.post('/api/add', data)
+            router.push('/')
         } catch (error) {
             console.error(error)
         }
