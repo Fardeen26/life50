@@ -4,7 +4,7 @@ import { Separator } from "./ui/separator";
 
 export default function Hero() {
     return (
-        <section className="flex flex-col items-center pt-24 max-sm:pt-20 z-50 max-sm:px-2">
+        <section className="flex flex-col items-center pt-16 max-sm:pt-20 z-50 max-sm:px-2">
             <Badge className="px-5 space-x-2 rounded-full bg-white hover:bg-gray-300 text-black">
                 <span>🎉</span>
                 <Separator className="w-[.5px] h-3" />
