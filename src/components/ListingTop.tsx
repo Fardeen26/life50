@@ -26,47 +26,45 @@ export default function ListingTop() {
         }
     }
 
-    const upvote = async (id: number, vote: number) => {
-        try {
-            const { data, error } = await supabase
-                .from("listings")
-                .update({ vote: vote + 1 })
-                .match({ id })
-                .select("*")
-                .order("vote", { ascending: false })
+    const voteListing = async (id: number, vote: number, type: string) => {
+        const votes = JSON.parse(localStorage.getItem("votes") || "{}");
 
-            if (error) {
-                console.error("Error updating todo:", error.message);
+        if (votes[id]) {
+            if (votes[id] === type) {
+                console.log(`You have already ${type}d this listing.`);
                 return;
             }
-            if (data) {
-                fetchListings()
-            }
-        } catch (error) {
-            console.error("Unexpected error:", error);
-        }
-    }
 
-    const downvote = async (id: number, vote: number) => {
+            const newVote = type === "upvote" ? vote + 1 : vote - 1;
+            votes[id] = type;
+            await updateVoteInDB(id, newVote);
+            localStorage.setItem("votes", JSON.stringify(votes));
+            return;
+        }
+
+        const newVote = type === "upvote" ? vote + 1 : vote - 1;
+        votes[id] = type;
+        await updateVoteInDB(id, newVote);
+        localStorage.setItem("votes", JSON.stringify(votes));
+    };
+
+    const updateVoteInDB = async (id: number, newVote: number) => {
         try {
-            const { data, error } = await supabase
+            const { error } = await supabase
                 .from("listings")
-                .update({ vote: vote - 1 })
-                .match({ id })
-                .select("*")
-                .order("vote", { ascending: false })
+                .update({ vote: newVote })
+                .match({ id });
 
             if (error) {
-                console.error("Error updating todo:", error.message);
-                return;
+                console.error("Error updating vote:", error.message);
+            } else {
+                fetchListings();
             }
-            if (data) {
-                fetchListings()
-            }
-        } catch (error) {
-            console.error("Unexpected error:", error);
+        } catch (err) {
+            console.error("Unexpected error:", err);
         }
-    }
+    };
+
 
     useEffect(() => {
         fetchListings()
@@ -101,9 +99,13 @@ export default function ListingTop() {
                             </p>
                         </div>
                         <div className="upvote flex flex-col absolute right-5 items-center gap-2">
-                            <button className="hover:scale-110 transition-all" onClick={() => upvote(listing.id ?? 0, listing.vote ?? 0)}><BiUpvote /></button>
+                            <button className="hover:scale-110 transition-all" onClick={() => voteListing(listing.id ?? 0, listing.vote ?? 0, "upvote")}>
+                                <BiUpvote />
+                            </button>
                             <span>{(listing.vote ?? 0)}</span>
-                            <button className="hover:scale-110 transition-all" onClick={() => downvote(listing.id ?? 0, listing.vote ?? 0)}><BiDownvote /></button>
+                            <button className="hover:scale-110 transition-all" onClick={() => voteListing(listing.id ?? 0, listing.vote ?? 0, "downvote")}>
+                                <BiDownvote />
+                            </button>
                         </div>
                     </div>
                 </MagicCard>
