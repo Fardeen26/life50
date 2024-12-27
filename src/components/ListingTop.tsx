@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { MagicCard } from "./ui/magic-card";
 import { BiUpvote, BiDownvote } from "react-icons/bi";
 import { listingType } from "@/types/listing";
-import axios from "axios";
 import dayjs from 'dayjs'
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
@@ -14,8 +13,14 @@ export default function ListingTop() {
 
     const fetchListings = async () => {
         try {
-            const response = await axios.get('/api/fetch')
-            setListings(response.data.message)
+            const { data, error } = await supabase.from('listings').select('*').order("vote", { ascending: false });
+            if (error) {
+                console.error("Error updating todo:", error.message);
+                return;
+            }
+            if (data) {
+                setListings(data)
+            }
         } catch (error) {
             console.log(error)
         }
@@ -26,6 +31,27 @@ export default function ListingTop() {
             const { data, error } = await supabase
                 .from("listings")
                 .update({ vote: vote + 1 })
+                .match({ id })
+                .select("*")
+                .order("vote", { ascending: false })
+
+            if (error) {
+                console.error("Error updating todo:", error.message);
+                return;
+            }
+            if (data) {
+                fetchListings()
+            }
+        } catch (error) {
+            console.error("Unexpected error:", error);
+        }
+    }
+
+    const downvote = async (id: number, vote: number) => {
+        try {
+            const { data, error } = await supabase
+                .from("listings")
+                .update({ vote: vote - 1 })
                 .match({ id })
                 .select("*")
                 .order("vote", { ascending: false })
@@ -62,7 +88,11 @@ export default function ListingTop() {
                             #{index + 1}
                         </div>
                         <div className="content pr-12">
-                            <h2 className="text-xl font-semibold">{listing.title}</h2>
+                            <h2 className="text-xl font-semibold">
+                                <Link href={`${listing.resource_link ? listing.resource_link : '#'}`} target="_blank">
+                                    {listing.title}
+                                </Link>
+                            </h2>
                             <p className="">{listing.description}</p>
                             <p className="text-xs mt-2 text-gray-300">
                                 by <Link href={`https://x.com/${listing.user_twitter}`} target="_blank">
@@ -73,7 +103,7 @@ export default function ListingTop() {
                         <div className="upvote flex flex-col absolute right-5 items-center gap-2">
                             <button className="hover:scale-110 transition-all" onClick={() => upvote(listing.id ?? 0, listing.vote ?? 0)}><BiUpvote /></button>
                             <span>{(listing.vote ?? 0)}</span>
-                            <span className="hover:scale-110 transition-all"><BiDownvote /></span>
+                            <button className="hover:scale-110 transition-all" onClick={() => downvote(listing.id ?? 0, listing.vote ?? 0)}><BiDownvote /></button>
                         </div>
                     </div>
                 </MagicCard>
