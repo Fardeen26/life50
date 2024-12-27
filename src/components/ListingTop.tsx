@@ -7,6 +7,7 @@ import { listingType } from "@/types/listing";
 import axios from "axios";
 import dayjs from 'dayjs'
 import Link from "next/link";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function ListingTop() {
     const [listings, setListings] = useState<listingType[]>([])
@@ -14,16 +15,37 @@ export default function ListingTop() {
     const fetchListings = async () => {
         try {
             const response = await axios.get('/api/fetch')
-            console.log(response.data.message)
             setListings(response.data.message)
         } catch (error) {
             console.log(error)
         }
     }
 
+    const upvote = async (id: number, vote: number) => {
+        try {
+            const { data, error } = await supabase
+                .from("listings")
+                .update({ vote: vote + 1 })
+                .match({ id })
+                .select("*")
+                .order("vote", { ascending: false })
+
+            if (error) {
+                console.error("Error updating todo:", error.message);
+                return;
+            }
+            if (data) {
+                fetchListings()
+            }
+        } catch (error) {
+            console.error("Unexpected error:", error);
+        }
+    }
+
     useEffect(() => {
         fetchListings()
     }, [])
+
 
     return (
         <section className="flex flex-col items-center gap-8 mt-6 max-sm:px-2">
@@ -49,9 +71,9 @@ export default function ListingTop() {
                             </p>
                         </div>
                         <div className="upvote flex flex-col absolute right-5 items-center gap-2">
-                            <button className="hover:scale-110 transition-all"><BiUpvote /></button>
+                            <button className="hover:scale-110 transition-all" onClick={() => upvote(listing.id ?? 0, listing.vote ?? 0)}><BiUpvote /></button>
                             <span>{(listing.vote ?? 0)}</span>
-                            <button className="hover:scale-110 transition-all"><BiDownvote /></button>
+                            <span className="hover:scale-110 transition-all"><BiDownvote /></span>
                         </div>
                     </div>
                 </MagicCard>
