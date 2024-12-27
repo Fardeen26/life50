@@ -6,7 +6,7 @@ export default function ListingOther() {
     const cards = Array(10).fill(0); // Array to iterate 10 times
 
     return (
-        <section className="flex flex-col items-center gap-8 mt-20 max-sm:px-2">
+        <section className="flex flex-col items-center gap-8 mt-6 max-sm:px-2">
             {cards.map((_, index) => (
                 <MagicCard
                     key={index}
