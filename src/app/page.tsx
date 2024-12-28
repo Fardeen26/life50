@@ -5,11 +5,6 @@ import ListingTop from "@/components/ListingTop";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 
-// sssurf
-// ffflurry
-// cccirlular2
-// cccirlular
-
 export default function Home() {
   return (
     <div className="pb-10">
@@ -17,7 +12,7 @@ export default function Home() {
       <Hero />
       <AddButton />
       <section className="flex justify-center mt-24 z-[999]">
-        <Tabs defaultValue="account" className="w-[30vw] !bg-transparent">
+        <Tabs defaultValue="account" className="w-[30vw] max-sm:w-full !bg-transparent">
           <TabsList className="flex justify-center gap-5 !bg-transparent">
             <TabsTrigger value="account">🔥 Top 50</TabsTrigger>
             <TabsTrigger value="password">✨ Others</TabsTrigger>

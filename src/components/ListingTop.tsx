@@ -18,7 +18,7 @@ export default function ListingTop() {
 
     const fetchListings = async () => {
         try {
-            const { data, error } = await supabase.from('listings').select('*').order("vote", { ascending: false });
+            const { data, error } = await supabase.from('listings').select('*').order("vote", { ascending: false }).limit(50);
             if (error) {
                 console.error("Error fetching todo:", error.message);
                 return;
@@ -72,7 +72,8 @@ export default function ListingTop() {
 
             if (error) {
                 console.error("Error updating vote:", error.message);
-            } else {
+            }
+            else {
                 fetchListings();
             }
         } catch (err) {
@@ -87,9 +88,9 @@ export default function ListingTop() {
 
     return (
         <section className="flex flex-col items-center gap-8 mt-6 max-sm:px-2">
-            {listings.length < 1 && <div className="flex flex-wrap items-center w-[50vw] space-y-8">
-                <Skeleton className="w-[50vw] h-24 rounded-xl" />
-                <Skeleton className="w-[50vw] h-24 rounded-xl" />
+            {listings.length < 1 && <div className="flex flex-wrap items-center w-[50vw] max-sm:w-full space-y-8">
+                <Skeleton className="w-[50vw] max-sm:w-full h-24 rounded-xl" />
+                <Skeleton className="w-[50vw] max-sm:w-full h-24 rounded-xl" />
             </div>}
 
             {listings && listings.map((listing, index) => (
