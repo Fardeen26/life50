@@ -4,7 +4,7 @@ export default function AddButton() {
     return (
         <section className="flex justify-center mt-10">
             <Link href={'/contribute'}>
-                <button className="bg-green-300 text-black py-2 px-5 text-sm font-semibold rounded-full">What Changed Your Life?</button>
+                <button className="bg-black text-white py-2 px-5 text-sm font-semibold rounded-full">What Changed Your Life?</button>
             </Link>
         </section>
     )

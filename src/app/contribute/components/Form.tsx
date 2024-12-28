@@ -34,7 +34,6 @@ export default function CustomForm() {
             description: '',
             username: '',
             user_twitter: '',
-            resource_link: '',
             category: ''
         },
     });
@@ -109,7 +108,7 @@ export default function CustomForm() {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Resource URL (if any)</FormLabel>
-                                    <Input {...field} placeholder='https://atomichabit.com' />
+                                    <Input {...field} placeholder='https://notion.com' />
                                     <FormMessage />
                                 </FormItem>
                             )}
