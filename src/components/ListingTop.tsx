@@ -10,6 +10,7 @@ import { supabase } from "@/lib/supabaseClient";
 import Image from "next/image";
 import { bricolage_grotesque } from "@/lib/fonts";
 import { Skeleton } from "./ui/skeleton";
+import { toast } from "sonner";
 
 export default function ListingTop() {
     const [listings, setListings] = useState<listingType[]>([])
@@ -20,14 +21,14 @@ export default function ListingTop() {
         try {
             const { data, error } = await supabase.from('listings').select('*').order("vote", { ascending: false }).limit(50);
             if (error) {
-                console.error("Error fetching todo:", error.message);
+                toast.error(`Error fetching todo: ${error.message}`)
                 return;
             }
             if (data) {
                 setListings(data)
             }
         } catch (error) {
-            console.log(error)
+            console.error(`Something went wrong while fetching todo`, error)
         }
     }
 
@@ -71,13 +72,13 @@ export default function ListingTop() {
                 .match({ id });
 
             if (error) {
-                console.error("Error updating vote:", error.message);
+                toast.error(`Error updating vote: ${error.message}`)
             }
             else {
                 fetchListings();
             }
         } catch (err) {
-            console.error("Unexpected error:", err);
+            console.error("Unexpected error while updating vote:", err);
         }
     };
 

@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input"
 import { bricolage_grotesque } from '@/lib/fonts';
 import { listingSchema } from '@/schema/listingSchema';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 export default function CustomForm() {
     const router = useRouter()
@@ -38,10 +39,10 @@ export default function CustomForm() {
         },
     });
 
-
     const onSubmit = async (data: z.infer<typeof listingSchema>) => {
         try {
             await axios.post('/api/add', data)
+            toast.success('Entry added successfully')
             router.push('/')
         } catch (error) {
             console.error(error)
