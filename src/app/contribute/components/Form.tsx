@@ -25,8 +25,11 @@ import { bricolage_grotesque } from '@/lib/fonts';
 import { listingSchema } from '@/schema/listingSchema';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
 
 export default function CustomForm() {
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const router = useRouter()
     const form = useForm<z.infer<typeof listingSchema>>({
         resolver: zodResolver(listingSchema),
@@ -40,12 +43,15 @@ export default function CustomForm() {
     });
 
     const onSubmit = async (data: z.infer<typeof listingSchema>) => {
+        setIsSubmitting(true)
         try {
             await axios.post('/api/add', data)
             toast.success('Entry added successfully')
             router.push('/')
         } catch (error) {
-            console.error(error)
+            console.error("Error while adding entry", error)
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -139,7 +145,14 @@ export default function CustomForm() {
                             )}
                         />
                         <Button type="submit" className='w-full bg-white hover:bg-gray-300 rounded-[7px] text-black'>
-                            Submit
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Please wait
+                                </>
+                            ) : (
+                                'Submit'
+                            )}
                         </Button>
                     </form>
                 </UIForm>
