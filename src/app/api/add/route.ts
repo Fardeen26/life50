@@ -1,9 +1,17 @@
 import { supabase } from "@/lib/supabaseClient";
-import { listingType } from "@/types/listing";
+
+type listingDataType = {
+    title: string,
+    description: string,
+    username: string,
+    user_twitter: string,
+    resource_link: string,
+    category: string,
+}
 
 export async function POST(req: Request) {
     try {
-        const listingData: listingType = await req.json();
+        const listingData: listingDataType = await req.json();
         const { data, error } = await supabase.from('listings').insert([{
             title: listingData.title,
             description: listingData.description,

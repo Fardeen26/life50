@@ -1,102 +1,26 @@
 "use client"
 
-import { useEffect, useState } from "react";
 import { MagicCard } from "./ui/magic-card";
 import { BiUpvote, BiDownvote } from "react-icons/bi";
-import { listingType } from "@/types/listing";
-import dayjs from 'dayjs'
+import { Skeleton } from "./ui/skeleton";
 import Link from "next/link";
-import { supabase } from "@/lib/supabaseClient";
+import { useListings } from "@/hooks/useListings";
+import dayjs from "dayjs";
 import Image from "next/image";
 import { bricolage_grotesque } from "@/lib/fonts";
-import { Skeleton } from "./ui/skeleton";
-import { toast } from "sonner";
 
-export default function ListingTop() {
-    const [listings, setListings] = useState<listingType[]>([])
-    const [userVotes, setUserVotes] = useState<Record<number, string>>({});
-    const [error, setError] = useState('')
-
-    const fetchListings = async () => {
-        try {
-            const { data, error } = await supabase.from('listings').select('*').order("vote", { ascending: false }).range(50, 70);
-            if (!data?.length) {
-                setError('No data present yet :(')
-            }
-            if (error) {
-                toast.error(`Error fetching todo: ${error.message}`);
-                return;
-            }
-            if (data) {
-                setListings(data)
-            }
-        } catch (error) {
-            console.error(`Something went wrong while fetching todo`, error)
-        }
-    }
-
-    const loadVotesFromLocalStorage = () => {
-        if (typeof window !== "undefined") {
-            const storedVotes = localStorage.getItem("votes");
-            if (storedVotes) {
-                setUserVotes(JSON.parse(storedVotes));
-            }
-        }
-    };
-
-    const voteListing = async (id: number, vote: number, type: string) => {
-        const votes = { ...userVotes };
-
-        if (votes[id]) {
-            if (votes[id] === type) {
-                return;
-            }
-
-            const newVote = type === "upvote" ? vote + 1 : vote - 1;
-            votes[id] = type;
-            setUserVotes(votes);
-            await updateVoteInDB(id, newVote);
-            localStorage.setItem("votes", JSON.stringify(votes));
-            return;
-        }
-
-        const newVote = type === "upvote" ? vote + 1 : vote - 1;
-        votes[id] = type;
-        setUserVotes(votes);
-        await updateVoteInDB(id, newVote);
-        localStorage.setItem("votes", JSON.stringify(votes));
-    };
-
-    const updateVoteInDB = async (id: number, newVote: number) => {
-        try {
-            const { error } = await supabase
-                .from("listings")
-                .update({ vote: newVote })
-                .match({ id });
-
-            if (error) {
-                toast.error(`Error updating vote: ${error.message}`)
-            }
-            else {
-                fetchListings();
-            }
-        } catch (err) {
-            console.error("Unexpected error while updating vote:", err);
-        }
-    };
-
-    useEffect(() => {
-        fetchListings()
-        loadVotesFromLocalStorage();
-    }, [])
+export default function ListingOther() {
+    const { listings, userVotes, error, voteListing } = useListings([50, 70]);
 
     return (
         <section className="flex flex-col items-center gap-8 mt-6 max-sm:px-2">
-            {error.length > 0 && error}
-            {!error && listings.length < 1 && <div className="flex flex-wrap items-center w-[50vw] space-y-8">
-                <Skeleton className="w-[50vw] h-24 rounded-xl" />
-                <Skeleton className="w-[50vw] h-24 rounded-xl" />
-            </div>}
+            {error && <div>{error}</div>}
+            {listings.length < 1 && !error && (
+                <div className="flex flex-wrap items-center w-[50vw] max-sm:w-full space-y-8">
+                    <Skeleton className="w-[50vw] max-sm:w-full h-24 rounded-xl" />
+                    <Skeleton className="w-[50vw] max-sm:w-full h-24 rounded-xl" />
+                </div>
+            )}
 
             {listings && listings.map((listing, index) => (
                 <MagicCard
@@ -106,7 +30,7 @@ export default function ListingTop() {
                 >
                     <div className="card flex items-center p-4 gap-5 w-[50vw] max-sm:w-full">
                         <div className="h-12 w-12 p-4 rounded-full bg-white text-black flex justify-center items-center relative">
-                            <Image src={'/rank-bg.avif'} alt="haswh" width={100} height={100} className="absolute object-fit size-full rounded-full" />
+                            <Image src={'/rank-bg.avif'} alt="rank-bg" width={100} height={100} className="absolute object-fit size-full rounded-full" />
                             <span className="z-50 font-semibold">#{index + 1}</span>
                         </div>
                         <div className="content pr-12">
@@ -124,21 +48,21 @@ export default function ListingTop() {
                         </div>
                         <div className="upvote flex flex-col absolute right-5 items-center gap-2">
                             <button
-                                className={`hover:scale-110 transition-all ${userVotes[listing.id ?? 0] === "upvote" ? "scale-150 hover:scale-150 text-green-500" : ""
+                                className={`hover:scale-110 transition-all ${userVotes[listing.id] === "upvote" ? "scale-150 hover:scale-150 text-green-500" : ""
                                     }`}
-                                onClick={() => voteListing(listing.id ?? 0, listing.vote ?? 0, "upvote")}
+                                onClick={() => voteListing(listing.id, listing.vote, "upvote")}
                             >
                                 <BiUpvote />
                             </button>
-                            <span>{(listing.vote ?? 0)}</span>
+                            <span>{(listing.vote)}</span>
                             <button
-                                className={`hover:scale-110 transition-all ${userVotes[listing.id ?? 0] === "downvote" ? "scale-150 text-red-500" : ""
+                                className={`hover:scale-110 transition-all ${userVotes[listing.id] === "downvote" ? "scale-150 text-red-500" : ""
                                     }`}
-                                onClick={() => voteListing(listing.id ?? 0, listing.vote ?? 0, "downvote")}
+                                onClick={() => voteListing(listing.id, listing.vote, "downvote")}
                             >
                                 <BiDownvote />
                             </button>
-                        </div>
+                        </div>67
                     </div>
                 </MagicCard>
             ))}
