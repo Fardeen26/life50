@@ -1,9 +1,12 @@
+"use client"
+
 import AddButton from "@/components/AddButton";
 import Hero from "@/components/Hero";
-import ListingOther from "@/components/ListingOther";
-import ListingTop from "@/components/ListingTop";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
+import dynamic from 'next/dynamic'
+const ListingTop = dynamic(() => import('@/components/ListingTop'), { ssr: true })
+const ListingOther = dynamic(() => import('@/components/ListingOther'), { ssr: true })
 
 export default function Home() {
   return (

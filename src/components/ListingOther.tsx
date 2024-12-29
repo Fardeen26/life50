@@ -1,5 +1,3 @@
-"use client"
-
 import { MagicCard } from "./ui/magic-card";
 import { BiUpvote, BiDownvote } from "react-icons/bi";
 import { Skeleton } from "./ui/skeleton";
