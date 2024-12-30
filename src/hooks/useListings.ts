@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { listingType } from "@/types/listing";
 import { toast } from "sonner";
@@ -8,7 +8,7 @@ export const useListings = (range: [number, number]) => {
     const [userVotes, setUserVotes] = useState<Record<number, string>>({});
     const [error, setError] = useState<string>("");
 
-    const fetchListings = async () => {
+    const fetchListings = useCallback(async () => {
         try {
             const { data, error } = await supabase
                 .from("listings")
@@ -22,26 +22,29 @@ export const useListings = (range: [number, number]) => {
             }
 
             if (data?.length) {
-                setListings(data);
+                setListings((prev) =>
+                    JSON.stringify(prev) === JSON.stringify(data) ? prev : data
+                );
             } else {
-                setError("No data available yet :(");
+                setError((prev) => (prev === "No data available yet :(" ? prev : "No data available yet :("));
             }
         } catch (err) {
             console.error("Something went wrong while fetching listings", err);
         }
-    };
+    }, [range]);
 
-    const loadVotesFromLocalStorage = () => {
+
+    const loadVotesFromLocalStorage = useCallback(() => {
         if (typeof window !== "undefined") {
             const storedVotes = localStorage.getItem("votes");
             if (storedVotes) {
                 const parsedVotes = JSON.parse(storedVotes);
-                if (JSON.stringify(userVotes) !== JSON.stringify(parsedVotes)) {
-                    setUserVotes(parsedVotes);
-                }
+                setUserVotes((prev) =>
+                    JSON.stringify(prev) === JSON.stringify(parsedVotes) ? prev : parsedVotes
+                );
             }
         }
-    };
+    }, []);
 
     const voteListing = async (id: number, vote: number, type: string) => {
         const votes = { ...userVotes };
@@ -73,7 +76,7 @@ export const useListings = (range: [number, number]) => {
             if (error) {
                 toast.error(`Error updating vote: ${error.message}`);
             } else {
-                fetchListings();
+                await fetchListings();
             }
         } catch (err) {
             console.error("Unexpected error while updating vote:", err);
@@ -82,8 +85,11 @@ export const useListings = (range: [number, number]) => {
 
     useEffect(() => {
         fetchListings();
+    }, [fetchListings]);
+
+    useEffect(() => {
         loadVotesFromLocalStorage();
-    }, [range]);
+    }, [loadVotesFromLocalStorage]);
 
     return { listings, userVotes, error, voteListing };
 };

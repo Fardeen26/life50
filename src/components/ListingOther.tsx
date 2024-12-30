@@ -6,9 +6,11 @@ import { useListings } from "@/hooks/useListings";
 import dayjs from "dayjs";
 import Image from "next/image";
 import { bricolage_grotesque } from "@/lib/fonts";
+import { useMemo } from "react";
 
 export default function ListingOther() {
-    const { listings, userVotes, error, voteListing } = useListings([50, 70]);
+    const range: [number, number] = useMemo(() => [50, 70], []);
+    const { listings, userVotes, error, voteListing } = useListings(range);
 
     return (
         <section className="flex flex-col items-center gap-8 mt-6 max-sm:px-2">

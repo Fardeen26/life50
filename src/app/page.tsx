@@ -5,10 +5,11 @@ import Hero from "@/components/Hero";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 import dynamic from 'next/dynamic'
+import React from "react";
 const ListingTop = dynamic(() => import('@/components/ListingTop'), { ssr: true })
 const ListingOther = dynamic(() => import('@/components/ListingOther'), { ssr: true })
 
-export default function Home() {
+export default React.memo(function Home() {
   return (
     <div className="pb-10">
       <Image src="/sssurf.svg" alt="hero" width={0} height={0} className="fixed -z-50 object-cover size-full opacity-50" />
@@ -26,4 +27,4 @@ export default function Home() {
       </section>
     </div>
   );
-}
+})
