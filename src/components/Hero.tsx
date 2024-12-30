@@ -15,7 +15,7 @@ export default function Hero() {
                 <br />
                 <span className="text-[#F9BF1E]">Changed</span> People&apos;s Life
             </h1>
-            <p className="text mt-6 text-gray-300 px-96 max-sm:px-0 text-center">From life-changing resources to unforgettable favorites, explore the ultimate lists shaped by the internet’s collective voice. Vote, contribute, and be part of the movement!</p>
+            <p className="text mt-6 text-gray-300 px-96 max-lg:px-32 max-sm:px-0 text-center">From life-changing resources to unforgettable favorites, explore the ultimate lists shaped by the internet’s collective voice. Vote, contribute, and be part of the movement!</p>
         </section>
     );
 }

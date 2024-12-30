@@ -66,6 +66,40 @@ export const useListings = (range: [number, number]) => {
         localStorage.setItem("votes", JSON.stringify(votes));
     };
 
+    const filterListings = async (category: string) => {
+        try {
+            if (category !== 'All') {
+                const { data, error } = await supabase
+                    .from('listings')
+                    .select('*')
+                    .match({ category })
+                    .order("vote", { ascending: false })
+                    .range(range[0], range[1])
+
+                if (error) {
+                    toast.error(`Error fetching listings: ${error.message}`);
+                    return;
+                }
+
+                if (data?.length) {
+                    setListings((prev) =>
+                        JSON.stringify(prev) === JSON.stringify(data) ? prev : data
+                    );
+                    setError('')
+                } else {
+                    setListings([])
+                    setError((prev) => (prev === "No data available yet :(" ? prev : "No data available yet :("));
+                }
+            } else {
+                setError('')
+                await fetchListings();
+            }
+
+        } catch (err) {
+            console.error("Unexpected error while filtering listings:", err);
+        }
+    }
+
     const updateVoteInDB = async (id: number, newVote: number) => {
         try {
             const { error } = await supabase
@@ -91,5 +125,5 @@ export const useListings = (range: [number, number]) => {
         loadVotesFromLocalStorage();
     }, [loadVotesFromLocalStorage]);
 
-    return { listings, userVotes, error, voteListing };
+    return { listings, userVotes, error, voteListing, filterListings };
 };
