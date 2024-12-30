@@ -57,14 +57,14 @@ export default function CustomForm() {
 
     return (
         <div className={`flex justify-center items-center min-h-screen ${bricolage_grotesque}`}>
-            <div className="w-full max-w-3xl p-8 space-y-8 rounded-lg">
+            <div className="w-full max-w-3xl p-8 max-sm:px-4 space-y-8 rounded-lg">
                 <div className="text-center">
                     <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-5">
                         Contribute to Someones Life
                     </h1>
                 </div>
                 <UIForm {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 px-6">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 px-6 max-sm:px-0">
                         <FormField
                             name="title"
                             control={form.control}
