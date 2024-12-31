@@ -41,7 +41,7 @@ export default function ListingTop() {
                 </Menubar>
             </div>
             <section className="flex flex-col items-center gap-8 mt-2 max-sm:px-2">
-                {error && <div>{error}</div>}
+                {error && <div className="mt-4 h-20">{error}</div>}
                 {listings.length < 1 && !error && (
                     <div className="flex flex-wrap items-center w-[50vw] max-sm:w-full space-y-8">
                         <Skeleton className="w-[50vw] max-sm:w-full h-24 rounded-xl" />
