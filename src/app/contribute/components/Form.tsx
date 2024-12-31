@@ -137,6 +137,10 @@ export default function CustomForm() {
                                             <SelectItem value="Quotes">Quotes</SelectItem>
                                             <SelectItem value="Courses">Courses</SelectItem>
                                             <SelectItem value="Articles">Articles</SelectItem>
+                                            <SelectItem value="Tool">Tool</SelectItem>
+                                            <SelectItem value="Movies">Movies</SelectItem>
+                                            <SelectItem value="Podcast">Podcast</SelectItem>
+                                            <SelectItem value="Incident">Incident</SelectItem>
                                             <SelectItem value="Other">Other</SelectItem>
                                         </SelectContent>
                                     </Select>

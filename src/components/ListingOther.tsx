@@ -15,6 +15,7 @@ import {
     MenubarMenu,
     MenubarTrigger,
 } from "@/components/ui/menubar"
+import { categories } from "./ListingTop";
 
 export default function ListingTop() {
     const range: [number, number] = useMemo(() => [50, 70], []);
@@ -97,5 +98,3 @@ export default function ListingTop() {
         </div>
     );
 }
-
-const categories = ["All", "Books", "Videos", "Article", "Quotes", "Courses", "Other"]

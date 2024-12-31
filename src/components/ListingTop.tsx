@@ -98,4 +98,4 @@ export default function ListingTop() {
     );
 }
 
-const categories = ["All", "Books", "Videos", "Article", "Quotes", "Courses", "Other"]
+export const categories = ["All", "Books", "Videos", "Article", "Quotes", "Courses", 'Tool', 'Movies', 'Podcast', 'Incident', "Other"]
