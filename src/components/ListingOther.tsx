@@ -22,7 +22,7 @@ export default function ListingTop() {
 
     return (
         <div className="flex flex-col items-center w-full relative">
-            <div className="flex justify-start w-[51vw] max-lg:w-[70vw] max-sm:w-full">
+            <div className={`flex justify-start w-[51vw] max-lg:w-[70vw] max-sm:w-full ${error ? 'hidden' : ''}`}>
                 <Menubar>
                     <MenubarMenu>
                         <MenubarTrigger>
