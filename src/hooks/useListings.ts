@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
-import { supabase } from "@/lib/supabaseClient";
 import { listingType } from "@/types/listing";
 import { toast } from "sonner";
+import axios from "axios";
 
 export const useListings = (range: [number, number]) => {
     const [listings, setListings] = useState<listingType[]>([]);
@@ -10,16 +10,8 @@ export const useListings = (range: [number, number]) => {
 
     const fetchListings = useCallback(async () => {
         try {
-            const { data, error } = await supabase
-                .from("listings")
-                .select("*")
-                .order("vote", { ascending: false })
-                .range(range[0], range[1]);
-
-            if (error) {
-                toast.error(`Error fetching listings: ${error.message}`);
-                return;
-            }
+            const response = await axios.get('/api/fetch')
+            const data = response.data.message;
 
             if (data?.length) {
                 setListings((prev) =>
@@ -31,7 +23,7 @@ export const useListings = (range: [number, number]) => {
         } catch (err) {
             console.error("Something went wrong while fetching listings", err);
         }
-    }, [range]);
+    }, []);
 
 
     const loadVotesFromLocalStorage = useCallback(() => {
@@ -47,6 +39,7 @@ export const useListings = (range: [number, number]) => {
     }, []);
 
     const voteListing = async (id: number, vote: number, type: string) => {
+        console.log("voteListing", id, vote, type)
         const votes = { ...userVotes };
 
         if (votes[id]) {
@@ -69,15 +62,17 @@ export const useListings = (range: [number, number]) => {
     const filterListings = async (category: string) => {
         try {
             if (category !== 'All') {
-                const { data, error } = await supabase
-                    .from('listings')
-                    .select('*')
-                    .match({ category })
-                    .order("vote", { ascending: false })
-                    .range(range[0], range[1])
+                const response = await axios.get('/api/filter', {
+                    params: {
+                        category,
+                        range1: range[0],
+                        range2: range[1]
+                    }
+                });
+                const data = response.data.message;
 
-                if (error) {
-                    toast.error(`Error fetching listings: ${error.message}`);
+                if (data.error) {
+                    toast.error(`Error fetching listings: ${data.error.message}`);
                     return;
                 }
 
@@ -102,13 +97,11 @@ export const useListings = (range: [number, number]) => {
 
     const updateVoteInDB = async (id: number, newVote: number) => {
         try {
-            const { error } = await supabase
-                .from("listings")
-                .update({ vote: newVote })
-                .match({ id });
-
-            if (error) {
-                toast.error(`Error updating vote: ${error.message}`);
+            console.log("updateVoteInDB", id, newVote)
+            const response = await axios.post('/api/update-vote', { id, newVote });
+            const data = response.data.message;
+            if (data.success === false) {
+                toast.error(`Error updating vote: ${data.error.message}`);
             } else {
                 await fetchListings();
             }

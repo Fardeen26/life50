@@ -8,7 +8,7 @@ export async function GET() {
             return Response.json(
                 {
                     success: false,
-                    message: 'Error while fetching listing',
+                    message: error.message,
                 },
                 { status: 500 }
             );
